@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Ábaco Binário e Decimal</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    text-align:center;
+    background:#f2f2f2;
+}
+
+#abaco, #abacoDecimal{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:40px;
+}
+
+.bit{
+    width:60px;
+    height:80px;
+    perspective:600px;
+}
+
+.card{
+    width:100%;
+    height:100%;
+    position:relative;
+    transform-style:preserve-3d;
+    transition: transform 0.5s;
+}
+
+.card.flip{
+    transform: rotateX(180deg);
+}
+
+.face{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    font-weight:bold;
+    background:#d8a96f;
+    border-radius:6px;
+    backface-visibility:hidden;
+}
+
+.back{
+    transform: rotateX(180deg);
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Ábaco Binário</h2>
+<h1 id="decimal">0</h1>
+
+<button onclick="adicionar()">Adicionar +1</button>
+
+<div id="abaco"></div>
+
+<h2>Ábaco Decimal</h2>
+<div id="abacoDecimal"></div>
+
+<script>
+
+// ======================
+// BINÁRIO
+// ======================
+
+const bits = 8
+let estadoAtual = "00000000"
+let valor = 0
+
+const abaco = document.getElementById("abaco")
+
+for(let i=0;i<bits;i++){
+    const bit = document.createElement("div")
+    bit.className="bit"
+
+    bit.innerHTML=`
+        <div class="card" id="card${i}">
+            <div class="face front">0</div>
+            <div class="face back">1</div>
+        </div>
+    `
+    abaco.appendChild(bit)
+}
+
+
+// ======================
+// DECIMAL
+// ======================
+
+const digitos = 3
+let estadoDecimal = "000"
+
+const abacoDecimal = document.getElementById("abacoDecimal")
+
+for(let i=0;i<digitos;i++){
+
+    const bit = document.createElement("div")
+    bit.className="bit"
+
+    bit.innerHTML=`
+        <div class="card" id="dec${i}">
+            <div class="face front">0</div>
+            <div class="face back">0</div>
+        </div>
+    `
+
+    abacoDecimal.appendChild(bit)
+}
+
+
+// ======================
+// FUNÇÃO PRINCIPAL
+// ======================
+
+function adicionar(){
+
+    if(valor >= 255) return
+
+    valor++
+
+    document.getElementById("decimal").innerText = valor
+
+
+    // ------------------
+    // BINÁRIO
+    // ------------------
+
+    let bin = valor.toString(2).padStart(8,"0")
+
+    for(let i=0;i<bits;i++){
+
+        if(bin[i] != estadoAtual[i]){
+
+            const card = document.getElementById("card"+i)
+
+            if(bin[i] === "1"){
+                card.classList.add("flip")
+            }else{
+                card.classList.remove("flip")
+            }
+        }
+    }
+
+    estadoAtual = bin
+
+
+    // ------------------
+    // DECIMAL
+    // ------------------
+
+    let dec = valor.toString().padStart(3,"0")
+
+    for(let i=0;i<digitos;i++){
+
+        if(dec[i] != estadoDecimal[i]){
+
+            const card = document.getElementById("dec"+i)
+
+            card.classList.add("flip")
+
+            setTimeout(()=>{
+                card.querySelector(".front").innerText = dec[i]
+                card.querySelector(".back").innerText = dec[i]
+                card.classList.remove("flip")
+            },250)
+
+        }
+
+    }
+
+    estadoDecimal = dec
+
+}
+
+</script>
+
+</body>
+</html>
